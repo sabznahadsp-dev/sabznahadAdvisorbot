@@ -1,0 +1,38 @@
+# Telegram Bot
+aiogram==3.13.1
+
+# Environment & Configuration
+python-dotenv==1.0.1
+
+# Database
+SQLAlchemy==2.0.36
+alembic==1.14.0
+asyncpg==0.30.0
+
+# API Server (Website Connection)
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+
+# Security
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+
+# Validation
+pydantic==2.9.2
+pydantic-settings==2.5.2
+
+# HTTP Requests
+httpx==0.28.0
+
+# Excel / PDF Reports
+openpyxl==3.1.5
+reportlab==4.2.5
+
+# Image & File Handling
+Pillow==11.0.0
+
+# Logging
+loguru==0.7.2
+
+# Testing
+pytest==8.3.3

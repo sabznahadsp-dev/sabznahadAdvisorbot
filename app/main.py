@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.api.auth import router as auth_router
+from app.api.protected import router as protected_router
 
 
 app = FastAPI(
@@ -10,8 +11,12 @@ app = FastAPI(
 )
 
 
-# Authentication routes
+# Authentication API
 app.include_router(auth_router)
+
+
+# Protected API
+app.include_router(protected_router)
 
 
 @app.get("/")

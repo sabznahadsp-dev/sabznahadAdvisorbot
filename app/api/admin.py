@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,6 +19,10 @@ from app.services.user_service import (
     get_user_by_id,
     update_user_role,
     update_user_status
+)
+
+from app.services.activity_service import (
+    create_activity_log
 )
 
 
@@ -122,10 +126,25 @@ async def change_user_role(
         )
 
 
+    old_role = user.role.name
+
+
     user = await update_user_role(
         session,
         user,
         data.role_id
+    )
+
+
+    await create_activity_log(
+        session=session,
+        user_id=current_user.id,
+        action="ROLE_CHANGED",
+        description=(
+            f"Admin {current_user.username} changed "
+            f"{user.username} role from "
+            f"{old_role} to role_id {data.role_id}"
+        )
     )
 
 
@@ -163,10 +182,29 @@ async def change_user_status(
         )
 
 
+    old_status = user.is_active
+
+
     user = await update_user_status(
         session,
         user,
         data.is_active
+    )
+
+
+    await create_activity_log(
+        session=session,
+        user_id=current_user.id,
+        action=(
+            "USER_ACTIVATED"
+            if data.is_active
+            else "USER_DEACTIVATED"
+        ),
+        description=(
+            f"Admin {current_user.username} changed "
+            f"{user.username} status from "
+            f"{old_status} to {data.is_active}"
+        )
     )
 
 

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app.api.auth import router as auth_router
 from app.api.protected import router as protected_router
+from app.api.admin import router as admin_router
 
 
 app = FastAPI(
@@ -17,6 +18,10 @@ app.include_router(auth_router)
 
 # Protected API
 app.include_router(protected_router)
+
+
+# Admin API
+app.include_router(admin_router)
 
 
 @app.get("/")

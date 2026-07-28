@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.database.connection import get_db
 from app.models.user import User
@@ -31,7 +32,6 @@ async def get_current_user(
                 detail="Invalid token"
             )
 
-
     except Exception:
 
         raise HTTPException(
@@ -41,10 +41,15 @@ async def get_current_user(
 
 
     result = await session.execute(
-        select(User).where(
+        select(User)
+        .options(
+            selectinload(User.role)
+        )
+        .where(
             User.id == user_id
         )
     )
+
 
     user = result.scalar_one_or_none()
 

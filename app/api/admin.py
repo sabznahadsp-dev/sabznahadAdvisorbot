@@ -14,6 +14,10 @@ from app.schemas.admin import (
     UserStatusUpdate
 )
 
+from app.schemas.activity import (
+    ActivityResponse
+)
+
 from app.services.user_service import (
     get_all_users,
     get_user_by_id,
@@ -22,7 +26,9 @@ from app.services.user_service import (
 )
 
 from app.services.activity_service import (
-    create_activity_log
+    create_activity_log,
+    get_all_activities,
+    get_user_activities
 )
 
 
@@ -42,6 +48,7 @@ async def admin_dashboard(
         "username": current_user.username,
         "role": current_user.role.name
     }
+
 
 
 @router.get(
@@ -69,6 +76,7 @@ async def list_users(
         }
         for user in users
     ]
+
 
 
 @router.get(
@@ -101,6 +109,7 @@ async def get_user(
         "role": user.role.name,
         "is_active": user.is_active
     }
+
 
 
 @router.patch(
@@ -157,6 +166,7 @@ async def change_user_role(
         "role": user.role.name,
         "is_active": user.is_active
     }
+
 
 
 @router.patch(
@@ -217,3 +227,59 @@ async def change_user_status(
         "role": user.role.name,
         "is_active": user.is_active
     }
+
+
+
+@router.get(
+    "/activities",
+    response_model=list[ActivityResponse]
+)
+async def list_activities(
+    current_user: User = Depends(require_admin),
+    session: AsyncSession = Depends(get_db)
+):
+
+    activities = await get_all_activities(
+        session
+    )
+
+    return [
+        {
+            "id": activity.id,
+            "user_id": activity.user_id,
+            "username": activity.user.username,
+            "action": activity.action,
+            "description": activity.description,
+            "created_at": activity.created_at
+        }
+        for activity in activities
+    ]
+
+
+
+@router.get(
+    "/users/{user_id}/activities",
+    response_model=list[ActivityResponse]
+)
+async def get_user_activity_logs(
+    user_id: int,
+    current_user: User = Depends(require_admin),
+    session: AsyncSession = Depends(get_db)
+):
+
+    activities = await get_user_activities(
+        session,
+        user_id
+    )
+
+    return [
+        {
+            "id": activity.id,
+            "user_id": activity.user_id,
+            "username": activity.user.username,
+            "action": activity.action,
+            "description": activity.description,
+            "created_at": activity.created_at
+        }
+        for activity in activities
+    ]
